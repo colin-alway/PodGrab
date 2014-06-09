@@ -1,0 +1,19 @@
+
+git clone https://github.com/colin-alway/PodGrab
+
+
+redirect STDOUT from a subprocess, the following DOESNT WORK:
+
+my_cmd = 'cat file1 file2 file3 > myfile'
+args = shlex.split(my_cmd)
+subprocess.call(args)
+
+presumably because it's a shell action - would need to add:
+
+subprocess.call(args, shell=True)
+
+for it to work. alternatively:
+
+with open('myfile', "w") as outfile:
+    subprocess.call(my_cmd, stdout=outfile)
+

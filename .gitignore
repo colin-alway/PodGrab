@@ -1,0 +1,13 @@
+# .gitignore
+# 
+# clean up files already added to repo :
+# git rm --cached # clean up files already added to repo
+#
+# create a global .gitignore :
+# git config --global core.excludesfile ~/.gitignore_global
+#
+# https://github.com/github/gitignore
+# https://github.com/github/gitignore/blob/master/Python.gitignore
+#
+podcasts/
+
