@@ -364,7 +364,7 @@ def iterate_feed(data, mode, download_dir, today, cur, conn, feed):
         for channel in xml_data.getElementsByTagName('channel'):
             channel_title = channel.getElementsByTagName('title')[0].firstChild.data
             channel_link = channel.getElementsByTagName('link')[0].firstChild.data
-            print "Channel Title: ===" + channel_title + "==="
+            print "Channel Name: === " + channel_title + " ==="    # Title
             print "Channel Link: " + channel_link
             channel_title = clean_string(channel_title)
                   
