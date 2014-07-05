@@ -238,7 +238,7 @@ def main(argv):
             for sub in subs:
                 feed_name = sub[0]
                 feed_url = sub[1]
-                print "Feed for subscription: '" + feed_name + "' from '" + feed_url + "' updating..."
+                print "Subscription Feed: '" + feed_name + "' from '" + feed_url + "' updating..."
                 data = open_datasource(feed_url)
                 if not data:
                     print "'" + feed_url + "' for '" + feed_name + "' is not a valid feed URL!"

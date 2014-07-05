@@ -43,7 +43,6 @@ Changes after fork:
 
     - replaced all TABs in source code with spaces
     - has_mail_users() : compare against 'None' 
-    
-TODO:
     - add .gitignore to prevent PodGrab.db & podcasts dir from being backed up
+    - text formatting to tidy output
     
