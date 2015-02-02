@@ -202,7 +202,7 @@ def main(argv):
     
     # check/create download directory
     if not os.path.exists(download_directory):
-        print "Podcast download directory is missing. Creating..."
+        #print "Podcast download directory is missing. Creating..."
         try:
             os.mkdir(download_directory)
             print "Download directory '" + download_directory + "' created"
@@ -601,23 +601,33 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
             
             try:
                 struct_time_item = strptime(fix_date(item_date), "%a, %d %b %Y %H:%M:%S")
-                has_error = 0    
-            except TypeError:
-                has_error = 1
-            except ValueError:
-                has_error = 1
-            
-            try:
-                struct_last_ep = strptime(last_ep, "%a, %d %b %Y %H:%M:%S")
                 has_error = 0
             except TypeError:
                 has_error = 1
-                print "This item has a badly formatted date. Cannot download!"
+                print 'TypeError', item_date
             except ValueError:
                 has_error = 1
+                print 'ValueError', item_date
+                '''
+                following doesnt really work - need a way to detect this format and convert it
+                to known format
+                '''
+                struct_time_item = strptime(fix_date(item_date), "%a, %d %b %Y %H:%M")
+                print 'struct_time_item', struct_time_item
+            
+            # XXX has_error reused without being checked!
+            
+            try:
+                struct_last_ep = strptime(last_ep, "%a, %d %b %Y %H:%M:%S")
+                has_error2 = 0
+            except TypeError:
+                has_error2 = 1
+                print "This item has a badly formatted date. Cannot download!"
+            except ValueError:
+                has_error2 = 1
                 print "This item has a badly formatted date. Cannot download!"
                 
-            if not has_error:
+            if not has_error and not has_error2:
                 if mktime(struct_time_item) > mktime(struct_last_ep) or mode == MODE_DOWNLOAD:
                     saved = write_podcast(item_file, channel_title, item_date, item_type)
                     
