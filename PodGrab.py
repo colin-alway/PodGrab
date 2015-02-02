@@ -369,8 +369,8 @@ def iterate_feed(data, mode, download_dir, today, cur, conn, feed):
             channel_title = clean_string(channel_title)
                   
             channel_directory = download_dir + os.sep + channel_title
-            if not os.path.exists(channel_directory):
-                        os.makedirs(channel_directory)
+            #if not os.path.exists(channel_directory):
+            #            os.makedirs(channel_directory)
             print "Current Date: ", today
             if mode == MODE_DOWNLOAD:
                 print "Bulk download. Processing..."
@@ -464,7 +464,10 @@ def write_podcast(item, channel_title, date, type):
         return 'File Exists'
     else:
         print "\nDownloading " + item_file_name + " which was published on " + date
+        #print "local_file", os.path.dirname(local_file), os.path.basename(local_file)
         try:
+            if not os.path.exists(os.path.dirname(local_file)):
+                os.makedirs(os.path.dirname(local_file))
             item_file = urllib2.urlopen(item)
             output = open(local_file, 'wb')
             # 2011-10-06 Werner Avenant - For some reason the file name changes when 
