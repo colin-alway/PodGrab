@@ -38,6 +38,7 @@ from email.mime.text import MIMEText
 import platform
 import traceback
 import unicodedata
+import httplib
 
 MODE_NONE = 70
 MODE_SUBSCRIBE = 71
@@ -287,6 +288,9 @@ def open_datasource(xml_url):
     except httplib.IncompleteRead:
         print "ERROR - Incomplete data read. Please try again later"
         response = False
+    except Exception,ee:
+        response = False
+        print 'Undefined Exception:', ee
     if response != False:
         return response.read()
     else:
