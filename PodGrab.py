@@ -675,7 +675,10 @@ def fix_date(date):
     new_date = ""
     split_array = date.split(' ')
     for i in range(0,5):
-        new_date = new_date + split_array[i] + " "
+        if i == 0:
+            new_date = new_date + split_array[i][:3] + ", "
+        else:
+            new_date = new_date + split_array[i] + " "
     return new_date.rstrip()
 
 
