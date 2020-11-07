@@ -435,43 +435,57 @@ def clean_string(str):
 # Change 2011-10-06 - Changed chan_loc to channel_title to help with relative path names
 # in the m3u file
 def write_podcast(item, channel_title, date, type):
+
+    file_suffixes = [
+        {
+            "types": ["video/quicktime", "audio/mp4", "video/mp4"],
+            "suffix": ".mp4",
+        },
+        {
+            "types": ["video/mpeg"],
+            "suffix": ".mpg",
+        },
+        {
+            "types": ["video/x-flv"],
+            "suffix": ".flv",
+        },
+        {
+            "types": ["video/x-ms-wmv"],
+            "suffix": ".wmv",
+        },
+        {
+            "types": ["video/webm", "audio/webm"],
+            "suffix": ".webm",
+        },
+        {
+            "types": ["audio/mpeg"],
+            "suffix": ".mp3",
+        },
+        {
+            "types": ["audio/ogg", "video/ogg", "audio/vorbis"],
+            "suffix": ".ogg",
+        },
+        {
+            "types": ["audio/x-ms-wma", "audio/x-ms-wax"],
+            "suffix": ".wma",
+        },
+    ]
+
     (item_path, item_file_name) = os.path.split(item)
     
     if len(item_file_name) > 50:
         item_file_name = item_file_name[:50]
     
     local_file = Global.current_directory + os.sep + DOWNLOAD_DIRECTORY + os.sep + channel_title + os.sep + clean_string(item_file_name)
-    if type == "video/quicktime" or type == "audio/mp4" or type == "video/mp4":
-        if not local_file.endswith(".mp4"):
-            local_file = local_file + ".mp4"
-      
-    elif type == "video/mpeg":
-        if not local_file.endswith(".mpg"):
-            local_file = local_file + ".mpg"
-      
-    elif type == "video/x-flv":
-        if not local_file.endswith(".flv"):
-            local_file = local_file + ".flv"
-      
-    elif type == "video/x-ms-wmv":
-        if not local_file.endswith(".wmv"):
-            local_file = local_file + ".wmv"
 
-    elif type == "video/webm" or type == "audio/webm":
-        if not local_file.endswith(".webm"):
-            local_file = local_file + ".webm"
+    # Find matching file types and ensure file extension matches.
+    for file_suffix in file_suffixes:
+        if type in file_suffix.get("types", []):
+            suffix = file_suffix.get("suffix")
+            if suffix and not local_file.endswith(suffix):
+                local_file = local_file + suffix
+            break
 
-    elif type == "audio/mpeg":
-        if not local_file.endswith(".mp3"):
-            local_file = local_file + ".mp3"
-
-    elif type == "audio/ogg" or type == "video/ogg" or type == "audio/vorbis":
-        if not local_file.endswith(".ogg"):
-            local_file = local_file + ".ogg"
-    elif type == "audio/x-ms-wma" or type == "audio/x-ms-wax":
-        if not local_file.endswith(".wma"):
-            local_file = local_file + ".wma"
-      
     # Check if file exists, but if the file size is zero (which happens when the user
     # presses Crtl-C during a download) - the the code should go ahead and download 
     # as if the file didn't exist

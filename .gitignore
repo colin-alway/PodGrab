@@ -11,3 +11,5 @@
 #
 podcasts/
 *.m3u
+.vscode/
+PodGrab.db
