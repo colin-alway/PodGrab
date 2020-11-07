@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 # PodGrab - A Python command line audio/video podcast downloader for RSS XML feeds.
 # Supported RSS item file types: MP3, M4V, OGG, FLV, MP4, MPG/MPEG, WMA, WMV, WEBM
@@ -223,10 +224,10 @@ def main(argv):
                 channel_directory = download_directory + os.sep + feed_name
                 print("Deleting '" + channel_directory + "'...")
                 delete_subscription(cursor, connection, feed_url)
-                try :
+                try:
                     shutil.rmtree(channel_directory)
                 except OSError:
-                    print("Subscription directory not found - it might have been manually deleted" )
+                    print("Subscription directory not found - it might have been manually deleted")
                 print("Subscription '" + feed_name + "' removed")
         elif mode == MODE_LIST:
             if Global.verbose:
@@ -272,13 +273,12 @@ def main(argv):
 #def main
 
 
-
 def open_datasource(xml_url):
     try:
         response = urllib2.urlopen(xml_url)
     except ValueError:
         try:
-            response = open(xml_url,'r')
+            response = open(xml_url, 'r')
         except ValueError:
             print("ERROR - Invalid feed!")
             response = False
@@ -288,13 +288,14 @@ def open_datasource(xml_url):
     except httplib.IncompleteRead:
         print("ERROR - Incomplete data read. Please try again later")
         response = False
-    except Exception,ee:
+    except Exception as ee:
         response = False
         print('Undefined Exception:', ee)
     if response != False:
         return response.read()
     else:
         return response
+
 
 def export_opml_file(cur, conn, cur_dir):
     item_count = 0
@@ -304,7 +305,7 @@ def export_opml_file(cur, conn, cur_dir):
     now = datetime.datetime.now()
     file_name = cur_dir + os.sep + "podgrab_subscriptions-" + str(now.year) + "-" + str(now.month) + "-" + str(now.day) + ".opml"
     subs = get_subscriptions(cur, conn)
-    file_handle = open(file_name,"w")
+    file_handle = open(file_name, "w")
     print("Exporting RSS subscriptions database to: '" + file_name + "' OPML file...please wait.\n")
     header = "<opml version=\"2.0\">\n<head>\n\t<title>PodGrab Subscriptions</title>\n</head>\n<body>\n"
     file_handle.writelines(header)
@@ -415,11 +416,12 @@ def clean_string(str):
         if c.isalnum() or c == "-" or c == "." or c.isspace():
             new_string_final = new_string_final + ''.join(c)
             new_string_final = new_string_final.strip()
-            new_string_final = new_string_final.replace(' ','-')
-            new_string_final = new_string_final.replace('---','-')
-            new_string_final = new_string_final.replace('--','-')
+            new_string_final = new_string_final.replace(' ', '-')
+            new_string_final = new_string_final.replace('---', '-')
+            new_string_final = new_string_final.replace('--', '-')
 
     return new_string_final
+
 
 # Change 2011-10-06 - Changed chan_loc to channel_title to help with relative path names
 # in the m3u file
@@ -561,6 +563,7 @@ def connect_database(curr_loc):
     conn = sqlite3.connect(curr_loc + os.sep + "PodGrab.db")
     return conn
 
+
 def setup_database(cur, conn):
     cur.execute("CREATE TABLE subscriptions (channel text, feed text, last_ep text)")
     cur.execute("CREATE TABLE email (address text)")
@@ -569,7 +572,7 @@ def setup_database(cur, conn):
 
 def insert_subscription(cur, conn, chan, feed):
     chan.replace(' ', '-')
-    chan.replace('---','-')
+    chan.replace('---', '-')
     row = (chan, feed, "Thu, 01 Jan 1970 00:00:00") # Added a correctly formatted date here so we can avoid an ugly "if date == null" in update_subscription later
     cur.execute('INSERT INTO subscriptions(channel, feed, last_ep) VALUES (?, ?, ?)', row)
     conn.commit()
@@ -664,7 +667,7 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
                     print("According to database we already have the episode dated " + item_date)
                     break
                     
-        except IndexError, e:
+        except IndexError as e:
             #traceback.print_exc()
             print("This RSS item has no downloadable URL link for the podcast for '" + item_title  + "'. Skipping...")
     
@@ -674,7 +677,7 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
 def fix_date(date):
     new_date = ""
     split_array = date.split(' ')
-    for i in range(0,5):
+    for i in range(0, 5):
         if i == 0:
             new_date = new_date + split_array[i][:3] + ", "
         else:
@@ -714,13 +717,13 @@ def list_subscriptions(cur, conn):
     try:
         result = cur.execute('SELECT * FROM subscriptions')
         for sub in result:
-            print "Name:\t\t", sub[0]
-            print "Feed:\t\t", sub[1]
-            print "Last Ep:\t", sub[2], "\n"
+            print("Name:\t\t", sub[0])
+            print("Feed:\t\t", sub[1])
+            print("Last Ep:\t", sub[2], "\n")
             count += 1
-        print str(count) + " subscriptions present"
+        print(str(count) + " subscriptions present")
     except sqlite3.OperationalError:
-        print "There are no current subscriptions or there was an error"
+        print("There are no current subscriptions or there was an error")
 
 
 def get_subscriptions(cur, conn):
@@ -728,7 +731,7 @@ def get_subscriptions(cur, conn):
         cur.execute('SELECT * FROM subscriptions')
         return cur.fetchall()
     except sqlite3.OperationalError:
-        print "There are no current subscriptions"
+        print("There are no current subscriptions")
         return null
 
 
@@ -747,6 +750,7 @@ def get_last_subscription_downloaded(cur, conn, feed):
     cur.execute('SELECT last_ep FROM subscriptions WHERE feed = ?', row)
     rec = cur.fetchone()
     return rec[0] 
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
