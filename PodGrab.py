@@ -101,26 +101,7 @@ def main(argv):
     total_size = 0
     data = ""
 
-    parser = argparse.ArgumentParser(description='A command line Podcast downloader for RSS XML feeds')
-    parser.add_argument('-s', '--subscribe', action="store", dest="sub_feed_url", help='Subscribe to the following XML feed and download latest podcast')
-    parser.add_argument('-d', '--download', action="store", dest="dl_feed_url", help='Bulk download all podcasts in the following XML feed or file')
-    parser.add_argument('-un', '--unsubscribe', action="store", dest="unsub_url", help='Unsubscribe from the following Podcast feed')
-    parser.add_argument('-ma', '--mail-add', action="store", dest="mail_address_add", help='Add a mail address to mail subscription updates to')
-    parser.add_argument('-md', '--mail-delete', action="store", dest="mail_address_delete", help='Delete a mail address')
-
-    parser.add_argument('-l', '--list', action="store_const", const="ALL", dest="list_subs", help='Lists current Podcast subscriptions')
-    parser.add_argument('-u', '--update', action="store_const", const="UPDATE", dest="update_subs", help='Updates all current Podcast subscriptions')
-    parser.add_argument('-ml', '--mail-list', action="store_const", const="MAIL", dest="list_mail", help='Lists all current mail addresses')
-
-    parser.add_argument('-io', '--import', action="store", dest="opml_import", help='Import subscriptions from OPML file')
-    parser.add_argument('-eo', '--export', action="store_const", const="OPML_EXPORT", dest="opml_export", help='Export subscriptions to OPML file')
-
-    parser.add_argument('-v', '--verbose', action="store_const", const="VERBOSE", dest="verbose", help='Verbose printing to the shell')
-
-    # possible feature addition
-    #parser.add_argument('--init', action="store_const", const="INIT", dest="init", help='create a database file if one does not already exist')
-    
-    arguments = parser.parse_args()
+    arguments = parse_args()
     
     if arguments.verbose:
         Global.verbose = True
@@ -271,6 +252,34 @@ def main(argv):
         if connection:
             connection.close()
 #def main
+
+
+def parse_args():
+    """Parse command line arguments.
+
+    Returns:
+        argparse.Namespace: User options.
+    """
+    parser = argparse.ArgumentParser(description='A command line Podcast downloader for RSS XML feeds')
+    parser.add_argument('-s', '--subscribe', action="store", dest="sub_feed_url", help='Subscribe to the following XML feed and download latest podcast')
+    parser.add_argument('-d', '--download', action="store", dest="dl_feed_url", help='Bulk download all podcasts in the following XML feed or file')
+    parser.add_argument('-un', '--unsubscribe', action="store", dest="unsub_url", help='Unsubscribe from the following Podcast feed')
+    parser.add_argument('-ma', '--mail-add', action="store", dest="mail_address_add", help='Add a mail address to mail subscription updates to')
+    parser.add_argument('-md', '--mail-delete', action="store", dest="mail_address_delete", help='Delete a mail address')
+
+    parser.add_argument('-l', '--list', action="store_const", const="ALL", dest="list_subs", help='Lists current Podcast subscriptions')
+    parser.add_argument('-u', '--update', action="store_const", const="UPDATE", dest="update_subs", help='Updates all current Podcast subscriptions')
+    parser.add_argument('-ml', '--mail-list', action="store_const", const="MAIL", dest="list_mail", help='Lists all current mail addresses')
+
+    parser.add_argument('-io', '--import', action="store", dest="opml_import", help='Import subscriptions from OPML file')
+    parser.add_argument('-eo', '--export', action="store_const", const="OPML_EXPORT", dest="opml_export", help='Export subscriptions to OPML file')
+
+    parser.add_argument('-v', '--verbose', action="store_const", const="VERBOSE", dest="verbose", help='Verbose printing to the shell')
+
+    # possible feature addition
+    #parser.add_argument('--init', action="store_const", const="INIT", dest="init", help='create a database file if one does not already exist')
+    
+    return parser.parse_args()
 
 
 def open_datasource(xml_url):
