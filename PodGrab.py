@@ -76,7 +76,7 @@ def main(argv):
             avoid running this script in the wrong dir and having it
             create podcasts dir & PodGrab.db file
         '''
-        print "No Arguments supplied - for usage run 'PodGrab.py -h'"
+        print("No Arguments supplied - for usage run 'PodGrab.py -h'")
         return
     
     mode = MODE_NONE
@@ -131,7 +131,7 @@ def main(argv):
             error_string = "Not a valid XML file or URL feed!"
             has_error = 1
         else:
-            print "XML data source opened\n"
+            print("XML data source opened\n")
             mode = MODE_SUBSCRIBE
             
     elif arguments.dl_feed_url:
@@ -141,7 +141,7 @@ def main(argv):
             error_string = "Not a valid XML file or URL feed!"
             has_error = 1 
         else:
-            print "XML data source opened\n"
+            print("XML data source opened\n")
             mode = MODE_DOWNLOAD
             
     elif arguments.unsub_url:
@@ -177,9 +177,9 @@ def main(argv):
         has_error = 1
 
     if Global.verbose:
-        print "Default encoding: " + sys.getdefaultencoding()
+        print("Default encoding: " + sys.getdefaultencoding())
     todays_date = strftime("%a, %d %b %Y %H:%M:%S", gmtime())
-    print "Current Directory: ", Global.current_directory
+    print("Current Directory: ", Global.current_directory)
     
     # check/create database file
     if does_database_exist(Global.current_directory):
@@ -190,75 +190,75 @@ def main(argv):
         else:
             cursor = connection.cursor()
     else:
-        print "PodGrab database missing. Creating..."
+        print("PodGrab database missing. Creating...")
         connection = connect_database(Global.current_directory)
         if not connection:
             error_string = "Could not create PodGrab database file!"
             has_error = 1
         else:
-            print "PodGrab database created"
+            print("PodGrab database created")
             cursor = connection.cursor()
             setup_database(cursor, connection)
-            print "Database setup complete"
+            print("Database setup complete")
     
     # check/create download directory
     if not os.path.exists(download_directory):
         #print "Podcast download directory is missing. Creating..."
         try:
             os.mkdir(download_directory)
-            print "Download directory '" + download_directory + "' created"
+            print("Download directory '" + download_directory + "' created")
         except OSError:
             error_string = "Could not create podcast download sub-directory!"
             has_error = 1
     else:
-        print "Download directory exists: '" + download_directory + "'"
+        print("Download directory exists: '" + download_directory + "'")
         
     if not has_error:
         if mode == MODE_UNSUBSCRIBE:
             feed_name = get_name_from_feed(cursor, connection, feed_url)
             if feed_name == "None":
-                print "Feed does not exist in the database! Skipping..."
+                print("Feed does not exist in the database! Skipping...")
             else:
                 feed_name = clean_string(feed_name)
                 channel_directory = download_directory + os.sep + feed_name
-                print "Deleting '" + channel_directory + "'..."
+                print("Deleting '" + channel_directory + "'...")
                 delete_subscription(cursor, connection, feed_url)
                 try :
                     shutil.rmtree(channel_directory)
                 except OSError:
-                    print "Subscription directory not found - it might have been manually deleted" 
-                print "Subscription '" + feed_name + "' removed"
+                    print("Subscription directory not found - it might have been manually deleted" )
+                print("Subscription '" + feed_name + "' removed")
         elif mode == MODE_LIST:
             if Global.verbose:
-                print "Listing current podcast subscriptions...\n"
+                print("Listing current podcast subscriptions...\n")
             list_subscriptions(cursor, connection)
         elif mode == MODE_UPDATE:
             if Global.verbose:
-                print "Updating all podcast subscriptions..."
+                print("Updating all podcast subscriptions...")
             subs = get_subscriptions(cursor, connection)
             for sub in subs:
                 feed_name = sub[0]
                 feed_url = sub[1]
-                print "Subscription Feed: '" + feed_name + "' from '" + feed_url + "' updating..."
+                print("Subscription Feed: '" + feed_name + "' from '" + feed_url + "' updating...")
                 data = open_datasource(feed_url)
                 if not data:
-                    print "'" + feed_url + "' for '" + feed_name + "' is not a valid feed URL!"
+                    print("'" + feed_url + "' for '" + feed_name + "' is not a valid feed URL!")
                 else:
                     message = iterate_feed(data, mode, download_directory, todays_date, cursor, connection, feed_url)
-                    print message
+                    print(message)
                     mail += message
             mail = mail + "\n\n" + str(total_items) + " podcasts totalling " + str(total_size) + " bytes were downloaded."
             if has_mail_users(cursor, connection):
-                print "Have e-mail address(es) - attempting e-mail..."
+                print("Have e-mail address(es) - attempting e-mail...")
                 mail_updates(cursor, connection, mail, str(total_items))
         elif mode == MODE_DOWNLOAD or mode == MODE_SUBSCRIBE:
-            print iterate_feed(data, mode, download_directory, todays_date, cursor, connection, feed_url)
+            print(iterate_feed(data, mode, download_directory, todays_date, cursor, connection, feed_url))
         elif mode == MODE_MAIL_ADD:
             add_mail_user(cursor, connection, mail_address)
-            print "E-Mail address: " + mail_address + " has been added"
+            print("E-Mail address: " + mail_address + " has been added")
         elif mode == MODE_MAIL_DELETE:
             delete_mail_user(cursor, connection, mail_address)
-            print "E-Mail address: " + mailAddress + " has been deleted"
+            print("E-Mail address: " + mailAddress + " has been deleted")
         elif mode == MODE_MAIL_LIST:
             list_mail_addresses(cursor, connection)
         elif mode == MODE_EXPORT:
@@ -266,7 +266,7 @@ def main(argv):
         elif mode == MODE_IMPORT:
             import_opml_file(cursor, connection, Global.current_directory, download_directory, import_file_name)
     else:
-        print "Sorry, some sort of error: '" + error_string + "'\nExiting...\n"
+        print("Sorry, some sort of error: '" + error_string + "'\nExiting...\n")
         if connection:
             connection.close()
 #def main
@@ -280,17 +280,17 @@ def open_datasource(xml_url):
         try:
             response = open(xml_url,'r')
         except ValueError:
-            print "ERROR - Invalid feed!"
+            print("ERROR - Invalid feed!")
             response = False
     except urllib2.URLError:
-        print "ERROR - Connection problems. Please try again later"
+        print("ERROR - Connection problems. Please try again later")
         response = False
     except httplib.IncompleteRead:
-        print "ERROR - Incomplete data read. Please try again later"
+        print("ERROR - Incomplete data read. Please try again later")
         response = False
     except Exception,ee:
         response = False
-        print 'Undefined Exception:', ee
+        print('Undefined Exception:', ee)
     if response != False:
         return response.read()
     else:
@@ -305,7 +305,7 @@ def export_opml_file(cur, conn, cur_dir):
     file_name = cur_dir + os.sep + "podgrab_subscriptions-" + str(now.year) + "-" + str(now.month) + "-" + str(now.day) + ".opml"
     subs = get_subscriptions(cur, conn)
     file_handle = open(file_name,"w")
-    print "Exporting RSS subscriptions database to: '" + file_name + "' OPML file...please wait.\n"
+    print("Exporting RSS subscriptions database to: '" + file_name + "' OPML file...please wait.\n")
     header = "<opml version=\"2.0\">\n<head>\n\t<title>PodGrab Subscriptions</title>\n</head>\n<body>\n"
     file_handle.writelines(header)
     for sub in subs:
@@ -313,27 +313,27 @@ def export_opml_file(cur, conn, cur_dir):
         feed_url = sub[1]
         last_ep = sub[2]
         file_handle.writelines("\t<outline title=\"" + feed_name + "\" text=\"" + feed_name + "\" type=\"rss\" xmlUrl=\"" + feed_url + "\" htmlUrl=\"" + feed_url + "\"/>\n")
-        print "Exporting subscription '" + feed_name + "'...Done.\n"
+        print("Exporting subscription '" + feed_name + "'...Done.\n")
         item_count = item_count + 1
     footer = "</body>\n</opml>"
     file_handle.writelines(footer)
     file_handle.close()
-    print str(item_count) + " item(s) exported to: '" + file_name + "'. COMPLETE"
+    print(str(item_count) + " item(s) exported to: '" + file_name + "'. COMPLETE")
 
 
 def import_opml_file(cur, conn, cur_dir, download_dir, import_file):
     count = 0
-    print "Importing OPML file '" + import_file + "'..."
+    print("Importing OPML file '" + import_file + "'...")
     if import_file.startswith("/") or import_file.startswith(".."):
         data = open_datasource(import_file)
         if not data:
-            print "ERROR = Could not open OPML file '" + import_file + "'"
+            print("ERROR = Could not open OPML file '" + import_file + "'")
     else:
         data = open_datasource(cur_dir + os.sep + import_file)
         if not data:
-            print "ERROR - Could not open OPML file '" + cur_dir + os.sep + import_file + "'"
+            print("ERROR - Could not open OPML file '" + cur_dir + os.sep + import_file + "'")
     if data:
-        print "File opened...please wait"
+        print("File opened...please wait")
         try:
             xml_data = xml.dom.minidom.parseString(data)
             items = xml_data.getElementsByTagName('outline')
@@ -341,8 +341,8 @@ def import_opml_file(cur, conn, cur_dir, download_dir, import_file):
                 item_feed = item.getAttribute('xmlUrl')
                 item_name = item.getAttribute('title')
                 item_name = clean_string(item_name)
-                print "Subscription Title: " + item_name
-                print "Subscription Feed: " + item_feed
+                print("Subscription Title: " + item_name)
+                print("Subscription Feed: " + item_feed)
                 item_directory = download_dir + os.sep + item_name
             
                 if not os.path.exists(item_directory):
@@ -351,55 +351,55 @@ def import_opml_file(cur, conn, cur_dir, download_dir, import_file):
                     insert_subscription(cur, conn, item_name, item_feed)
                     count = count + 1
                 else:
-                    print "This subscription is already present in the database. Skipping..."
-                print "\n"
-            print "\nA total of " + str(count) + " subscriptions have been added from OPML file: '" + import_file + "'"
-            print "These will be updated on the next update run.\n"
+                    print("This subscription is already present in the database. Skipping...")
+                print("\n")
+            print("\nA total of " + str(count) + " subscriptions have been added from OPML file: '" + import_file + "'")
+            print("These will be updated on the next update run.\n")
         except xml.parsers.expat.ExpatError:
-            print "ERROR - Malformed XML syntax in feed. Skipping..."
+            print("ERROR - Malformed XML syntax in feed. Skipping...")
 
 
 def iterate_feed(data, mode, download_dir, today, cur, conn, feed):
     if Global.verbose:
-        print "Iterating feed..."
+        print("Iterating feed...")
     message = ""
     try:
         xml_data = xml.dom.minidom.parseString(data)
         for channel in xml_data.getElementsByTagName('channel'):
             channel_title = channel.getElementsByTagName('title')[0].firstChild.data
             channel_link = channel.getElementsByTagName('link')[0].firstChild.data
-            print "Channel Name: === " + channel_title + " ==="    # Title
-            print "Channel Link: " + channel_link
+            print("Channel Name: === " + channel_title + " ===")    # Title
+            print("Channel Link: " + channel_link)
             channel_title = clean_string(channel_title)
                   
             channel_directory = download_dir + os.sep + channel_title
             #if not os.path.exists(channel_directory):
             #            os.makedirs(channel_directory)
-            print "Current Date: ", today
+            print("Current Date: ", today)
             if mode == MODE_DOWNLOAD:
-                print "Bulk download. Processing..."
+                print("Bulk download. Processing...")
                 # 2011-10-06 Replaced channel_directory with channel_title - needed for m3u file later
                 num_podcasts = iterate_channel(channel, today, mode, cur, conn, feed, channel_title) 
-                print "\n", num_podcasts, "have been downloaded"
+                print("\n", num_podcasts, "have been downloaded")
             elif mode == MODE_SUBSCRIBE:
-                print "Feed to subscribe to: " + feed + ". Checking for database duplicate..."
+                print("Feed to subscribe to: " + feed + ". Checking for database duplicate...")
                 if not does_sub_exist(cur, conn, feed):
-                    print "Subscribe. Processing..."
+                    print("Subscribe. Processing...")
                     # 2011-10-06 Replaced channel_directory with channel_title - needed for m3u file later
                     num_podcasts = iterate_channel(channel, today, mode, cur, conn, feed, channel_title)
-                    print "\n", num_podcasts, "have been downloaded from your subscription"
+                    print("\n", num_podcasts, "have been downloaded from your subscription")
                 else:
-                    print "Subscription already exists! Skipping..."
+                    print("Subscription already exists! Skipping...")
             elif mode == MODE_UPDATE:
                 if Global.verbose:
-                    print "Updating RSS feeds. Processing..."
+                    print("Updating RSS feeds. Processing...")
                 num_podcasts = iterate_channel(channel, today, mode, cur, conn, feed, channel_title)
                 message += str(num_podcasts) + " have been downloaded from your subscription: '" + channel_title + "'\n"
     except xml.parsers.expat.ExpatError:
-        print "ERROR - Malformed XML syntax in feed. Skipping..."
+        print("ERROR - Malformed XML syntax in feed. Skipping...")
         message += "0 podcasts have been downloaded from this feed due to RSS syntax problems. Please try again later"
     except UnicodeEncodeError:
-        print "ERROR - Unicoce encoding error in string. Cannot convert to ASCII. Skipping..."
+        print("ERROR - Unicoce encoding error in string. Cannot convert to ASCII. Skipping...")
         message += "0 podcasts have been downloaded from this feed due to RSS syntax problems. Please try again later"
     return message
 
@@ -467,7 +467,7 @@ def write_podcast(item, channel_title, date, type):
     if os.path.exists(local_file) and os.path.getsize(local_file) != 0:
         return 'File Exists'
     else:
-        print "\nDownloading " + item_file_name + " which was published on " + date
+        print("\nDownloading " + item_file_name + " which was published on " + date)
         #print "local_file", os.path.dirname(local_file), os.path.basename(local_file)
         try:
             if not os.path.exists(os.path.dirname(local_file)):
@@ -479,7 +479,7 @@ def write_podcast(item, channel_title, date, type):
             item_file_name = os.path.basename(output.name)  
             output.write(item_file.read())
             output.close()
-            print "Podcast: ", item, " downloaded to: ", local_file
+            print("Podcast: ", item, " downloaded to: ", local_file)
             
             # 2011-11-06 Append to m3u file
             output = open(Global.current_directory + os.sep + Global.m3u_file, 'a')
@@ -487,7 +487,7 @@ def write_podcast(item, channel_title, date, type):
             output.close()
             return 'Successful Write'
         except urllib2.URLError as e:
-            print "ERROR - Could not write item to file: ", e
+            print("ERROR - Could not write item to file: ", e)
             return 'Write Error'
 
 
@@ -519,9 +519,9 @@ def get_mail_users(cur, conn):
 def list_mail_addresses(cur, conn):
     cur.execute('SELECT * from email')
     result = cur.fetchall()
-    print "Listing mail addresses..."
+    print("Listing mail addresses...")
     for address in result:
-        print "Address:\t" + address[0]
+        print("Address:\t" + address[0])
 
 
 def has_mail_users(cur, conn):
@@ -543,10 +543,10 @@ def mail_updates(cur, conn, mess, num_updates):
             else:
                 subject_line += " - nothing new..."
             mail('localhost', 'podgrab@' + platform.node(), address[0], subject_line, mess)
-            print "Successfully sent podcast updates e-mail to: " + address[0]
+            print("Successfully sent podcast updates e-mail to: " + address[0])
         except smtplib.SMTPException:
             traceback.print_exc()
-            print "Could not send podcast updates e-mail to: " + address[0]
+            print("Could not send podcast updates e-mail to: " + address[0])
 
 
 def mail(server_url=None, sender='', to='', subject='', text=''):
@@ -583,12 +583,12 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
     size = 0
     last_ep = "NULL"
     if Global.verbose:
-        print "Iterating channel..."
+        print("Iterating channel...")
     
     if does_sub_exist(cur, conn, feed):
-        print "Podcast subscription exists"
+        print("Podcast subscription exists")
     else:
-        print "Podcast subscription is new - getting previous podcast"
+        print("Podcast subscription is new - getting previous podcast")
         insert_subscription(cur, conn, chan.getElementsByTagName('title')[0].firstChild.data, feed)
 
     last_ep = get_last_subscription_downloaded(cur, conn, feed)
@@ -611,16 +611,16 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
                 has_error = 0
             except TypeError:
                 has_error = 1
-                print 'TypeError', item_date
+                print('TypeError', item_date)
             except ValueError:
                 has_error = 1
-                print 'ValueError', item_date
+                print('ValueError', item_date)
                 '''
                 following doesnt really work - need a way to detect this format and convert it
                 to known format
                 '''
                 struct_time_item = strptime(fix_date(item_date), "%a, %d %b %Y %H:%M")
-                print 'struct_time_item', struct_time_item
+                print('struct_time_item', struct_time_item)
             
             # XXX has_error reused without being checked!
             
@@ -629,25 +629,25 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
                 has_error2 = 0
             except TypeError:
                 has_error2 = 1
-                print "This item has a badly formatted date. Cannot download!"
+                print("This item has a badly formatted date. Cannot download!")
             except ValueError:
                 has_error2 = 1
-                print "This item has a badly formatted date. Cannot download!"
+                print("This item has a badly formatted date. Cannot download!")
                 
             if not has_error and not has_error2:
                 if mktime(struct_time_item) > mktime(struct_last_ep) or mode == MODE_DOWNLOAD:
                     saved = write_podcast(item_file, channel_title, item_date, item_type)
                     
                     if saved == 'File Exists':
-                        print "File Existed - updating local database's Last Episode";
+                        print("File Existed - updating local database's Last Episode")
                         update_subscription(cur, conn, feed, fix_date(item_date))
                         
                     if saved == 'Successful Write':
-                        print "\nTitle: " + item_title
-                        print "Date:  " + item_date
-                        print "File:  " + item_file
-                        print "Size:  " + item_size + " bytes"
-                        print "Type:  " + item_type
+                        print("\nTitle: " + item_title)
+                        print("Date:  " + item_date)
+                        print("File:  " + item_file)
+                        print("Size:  " + item_size + " bytes")
+                        print("Type:  " + item_type)
                         update_subscription(cur, conn, feed, fix_date(item_date))
                         num += 1
                         size = size + int(item_size)
@@ -658,15 +658,15 @@ def iterate_channel(chan, today, mode, cur, conn, feed, channel_title):
                         break;
                         
                     if (num >= NUM_MAX_DOWNLOADS):
-                        print "Maximum session download of " + str(NUM_MAX_DOWNLOADS) + " podcasts has been reached. Exiting."
+                        print("Maximum session download of " + str(NUM_MAX_DOWNLOADS) + " podcasts has been reached. Exiting.")
                         break
                 else:
-                    print "According to database we already have the episode dated " + item_date
+                    print("According to database we already have the episode dated " + item_date)
                     break
                     
         except IndexError, e:
             #traceback.print_exc()
-            print "This RSS item has no downloadable URL link for the podcast for '" + item_title  + "'. Skipping..."
+            print("This RSS item has no downloadable URL link for the podcast for '" + item_title  + "'. Skipping...")
     
     return str(num) + " podcasts totalling " + str(size) + " bytes"
 
